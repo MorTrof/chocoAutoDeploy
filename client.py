@@ -26,7 +26,7 @@ b.clicked.connect(check_con)
 mainwin.show()
 app.exec_()'''
 
-
+print('test')
 
 
 class WelcomeWin(QWidget):
