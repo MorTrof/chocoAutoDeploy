@@ -147,7 +147,7 @@ class ChooseWin(QWidget):
             dirTemp = os.listdir(req)
             for i in dirTemp:
                 print(i)
-                
+
 
     def onClickChoco(self):
         try: 
@@ -159,7 +159,7 @@ class ChooseWin(QWidget):
             ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'
             self.cons = subprocess.run(["powershell", "-Command", ps_command], check=True)
 
-            if int(self.cons) == 0:
+            if self.cons.stdout == None:
                 mes = QMessageBox()
                 mes.setText('Всё готово к установке!')
                 mes.show()
