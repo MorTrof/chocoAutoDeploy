@@ -141,7 +141,7 @@ class ChooseWin(QWidget):
             ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'
             self.cons = subprocess.run(["powershell", "-Command", ps_command], check=True)
             self.result = self.cons.stdout
-            if str(self.result).find('An existing Chocolatey installation was detected.'):
+            if str(self.result).find('An existing Chocolatey installation was detected.') > -1:
                 mes = QMessageBox()
                 mes.setText('Всё готово к установке!')
                 mes.show()
