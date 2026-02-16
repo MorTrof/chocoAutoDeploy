@@ -34,7 +34,9 @@ app.exec_()'''
 
 
 class WelcomeWin(QWidget):
+
     '''Окно приветствия'''
+
     def __init__(self):
 
         super().__init__()
@@ -104,7 +106,9 @@ class WelcomeWin(QWidget):
 
 
 class ChooseWin(QWidget):
+
     '''Окно выбора шаблона'''
+
     def __init__(self):
         
         super().__init__()
@@ -125,6 +129,7 @@ class ChooseWin(QWidget):
 
         self.buttonChoco = QPushButton('Проверить наличие установщика')
         self.buttonReq = QPushButton('Проверить соответствие системным требованиям')
+
         '''self.buttonL = QPushButton('Ученик', self)
         self.buttonT = QPushButton('Учитель', self)
         self.buttonM = QPushButton('Менеджер', self)
@@ -136,6 +141,7 @@ class ChooseWin(QWidget):
 
         self.buttonChoco.clicked.connect(self.onClickChoco)
         self.buttonReq.clicked.connect(self.onClickReq)
+
         '''self.buttonL.clicked.connect(self.onClickL)
         self.buttonT.clicked.connect(self.onClickT)
         self.buttonM.clicked.connect(self.onClickM)
@@ -147,21 +153,24 @@ class ChooseWin(QWidget):
         self.hL1 = QHBoxLayout()
         self.hL1.addWidget(self.buttonChoco)
         self.hL1.addWidget(self.buttonReq)
+
         #self.hL2 = QHBoxLayout()
 
         self.vL.addWidget(self.helloLabel,5,Qt.AlignCenter)
         self.vL.addWidget(self.checkLabel,5,Qt.AlignCenter)
         self.vL.addWidget(self.reqLabel,5,Qt.AlignCenter)
+        
         #self.vL.addWidget(self.buttonChoco,5,Qt.AlignCenter)
 
         '''self.hL1.addWidget(self.buttonT,Qt.AlignCenter)
         self.hL1.addWidget(self.buttonL,Qt.AlignCenter)
-
         self.hL2.addWidget(self.buttonM,Qt.AlignCenter)
         self.hL2.addWidget(self.buttonA,Qt.AlignCenter)'''
 
         self.vL.addLayout(self.hL1)
+
         #self.vL.addLayout(self.hL2)
+
         self.vL.setSpacing(3)
         self.vL.addWidget(self.listTemp)
         self.setLayout(self.vL)
@@ -177,13 +186,14 @@ class ChooseWin(QWidget):
 
             self.tempName = self.listTemp.selectedItems()[0].text()
             req = '\\\\'+welc.server+'\\share\\'+self.tempName
-            command = f"choco source add -n=Learner -s='"+req+"' --priority=1;"
+            command = f"choco source add -n="+self.tempName+" -s='"+req+"' --priority=1;"
             dirTemp = os.listdir(req)
             word = ''
 
             for nupkg in dirTemp:
 
                 #print(nupkg)
+
                 for let in nupkg:
                     
                     if let != '.':
@@ -197,7 +207,8 @@ class ChooseWin(QWidget):
                         else:    
                             command = 'choco install '+word
 
-                        print(command)
+                        #print(command)
+
                         ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'    
                         self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
                         word = '' 
@@ -205,12 +216,14 @@ class ChooseWin(QWidget):
                         
                 
     def onClickChoco(self):
+
         try: 
 
             #legacy
             #self.cons = subprocess.run(["powershell.exe","Start-Process", "PowerShell", "-Verb", "RunAs;","Set-ExecutionPolicy", "Bypass", "-Scope", "Process", "-Force;", "[System.Net.ServicePointManager]::SecurityProtocol", "=", "[System.Net.ServicePointManager]::SecurityProtocol", "-bor", "3072;", "iex", "((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"])
 
             #PS-script
+
             command = "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
             ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'
             self.cons = subprocess.run(["powershell", "-Command", ps_command], check=True)
@@ -230,7 +243,9 @@ class ChooseWin(QWidget):
             mes.exec_()
 
     def onClickReq(self):
+
         try:
+
             info = cpuinfo.get_cpu_info()
 
             #print(f"Модель: {info['brand_raw']}")
