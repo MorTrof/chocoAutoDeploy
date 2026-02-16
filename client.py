@@ -175,10 +175,7 @@ class ChooseWin(QWidget):
                         break
                         
                 
-                
-                
-
-    def onClickChoco(self):
+    '''def onClickChoco(self):
         try: 
 
             #legacy
@@ -211,9 +208,9 @@ class ChooseWin(QWidget):
         self.close()
 
         #legacy
-        '''command = "choco install googlechrome"
-        ps_command = f'Start-Process powershell -Verb RunAs -ArgumentList "-NoExit -Command {command}"'
-        self.cons = subprocess.run(["powershell", "-Command", ps_command], check=True)'''
+        #command = "choco install googlechrome"
+        #ps_command = f'Start-Process powershell -Verb RunAs -ArgumentList "-NoExit -Command {command}"'
+        #self.cons = subprocess.run(["powershell", "-Command", ps_command], check=True)
 
     def onClickT(self): 
 
@@ -237,7 +234,7 @@ class ChooseWin(QWidget):
         ps_command = f'Start-Process powershell -Verb RunAs -ArgumentList "-NoExit -Command {command}"'    
         self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
 
-        self.close()
+        self.close()'''
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
