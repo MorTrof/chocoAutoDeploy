@@ -1,8 +1,9 @@
 import requests
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication,QWidget,QPushButton,QMessageBox,QVBoxLayout,QLabel,QHBoxLayout
+from PyQt5.QtWidgets import QApplication,QWidget,QPushButton,QMessageBox,QVBoxLayout,QLabel,QHBoxLayout,QInputDialog
 from PyQt5.QtGui import QFont
 import sys
+import subprocess
 '''app = QApplication([])
 mainwin = QWidget()
 lV = QVBoxLayout()
@@ -29,6 +30,7 @@ app.exec_()'''
 
 
 class WelcomeWin(QWidget):
+    '''Окно приветствия'''
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -50,58 +52,106 @@ class WelcomeWin(QWidget):
         
         self.setLayout(self.vL)
     def onClick(self):
-        connect = requests.get('http://192.168.1.170')
-        temp = str(connect).find('200') > -1
-        if temp:
+        self.server, ok = QInputDialog.getText(self,'Введите ip сервера','ip сервера')
+        self.server = '172.24.220.88'
+        try: 
+            if self.server != "" and ok:
+                self.connect = requests.get('http://'+self.server)
+                temp = str(self.connect).find('200') > -1
+                if temp:
+                    mes = QMessageBox()
+                    mes.setText('Соединение установлено!')
+                    mes.show()
+                    mes.exec_()
+                else:
+                    mes = QMessageBox()
+                    mes.setText('Соединение не установлено!')
+                    mes.show()
+                    mes.exec_()
+                    
+                if temp: self.nextWin()
+                
+        except:
             mes = QMessageBox()
-            mes.setText('Соединение установлено!')
+            mes.setText('Такого сервера не существует!')
             mes.show()
             mes.exec_()
-        else:
-            mes = QMessageBox()
-            mes.setText('Соединение не установлено!')
-            mes.show()
-            mes.exec_()
-            self.button.setText('Проверить соединение ещё раз!')
-            self.button.adjustSize()
-        if temp: self.nextWin()
+        self.button.setText('Проверить соединение ещё раз!')
+        self.button.adjustSize()
     def nextWin(self):
         self.hide()
         self.chooseWin = ChooseWin()
         self.chooseWin.show()
+
+
 class ChooseWin(QWidget):
+    '''Окно выбора шаблона'''
     def __init__(self):
         super().__init__()
         self.initUI()
     def initUI(self):
         
         self.setWindowTitle('Выбор шаблона')
-        self.setGeometry(1000,500, 500, 200)
+        self.setGeometry(1000,700, 500, 200)
         self.font = QFont("Times", 14, 500,False)
         
-        self.helloLabel = QLabel('Пожалуйста, выберите шаблон, чтобы начать установку.', self)
+        self.helloLabel = QLabel('Пожалуйста, выберите шаблон.', self)
         self.helloLabel.setFont(self.font)
+        self.checkLabel = QLabel('Проверьте наличие установщика.', self)
+        self.checkLabel.setFont(self.font)
+        self.buttonChoco = QPushButton('Развернуть установщик')
 
         self.buttonL = QPushButton('Ученик', self)
         self.buttonT = QPushButton('Учитель', self)
         self.buttonM = QPushButton('Менеджер', self)
         self.buttonD = QPushButton('Директор', self)
+
+        self.buttonChoco.clicked.connect(self.onClickChoco)
         self.buttonL.clicked.connect(self.onClickL)
         self.buttonT.clicked.connect(self.onClickT)
         self.buttonM.clicked.connect(self.onClickM)
         self.buttonD.clicked.connect(self.onClickD)
+
         self.vL = QVBoxLayout()
         self.hL1 = QHBoxLayout()
         self.hL2 = QHBoxLayout()
+
         self.vL.addWidget(self.helloLabel,5,Qt.AlignCenter)
+        self.vL.addWidget(self.checkLabel,5,Qt.AlignCenter)
+        
+        self.vL.addWidget(self.buttonChoco,5,Qt.AlignCenter)
+
         self.hL1.addWidget(self.buttonT,Qt.AlignCenter)
         self.hL1.addWidget(self.buttonL,Qt.AlignCenter)
+
         self.hL2.addWidget(self.buttonM,Qt.AlignCenter)
         self.hL2.addWidget(self.buttonD,Qt.AlignCenter)
+
         self.vL.addLayout(self.hL1)
         self.vL.addLayout(self.hL2)
         self.vL.setSpacing(5)
+
         self.setLayout(self.vL)
+
+    def onClickChoco(self):
+        try: 
+            
+            #self.cons = subprocess.run(["powershell.exe","Start-Process", "PowerShell", "-Verb", "RunAs;","Set-ExecutionPolicy", "Bypass", "-Scope", "Process", "-Force;", "[System.Net.ServicePointManager]::SecurityProtocol", "=", "[System.Net.ServicePointManager]::SecurityProtocol", "-bor", "3072;", "iex", "((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"])
+            command = "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+            ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'
+            self.cons = subprocess.run(["powershell", "-Command", ps_command], check=True)
+            self.result = self.cons.stdout
+            if str(self.result).find('An existing Chocolatey installation was detected.'):
+                mes = QMessageBox()
+                mes.setText('Всё готово к установке!')
+                mes.show()
+                mes.exec_()
+        except:
+            mes = QMessageBox()
+            mes.setText('Ошибка!')
+            mes.show()
+            mes.exec_()
+        
     def onClickL(self): pass
     def onClickT(self): pass
     def onClickM(self): pass
