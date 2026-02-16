@@ -1,6 +1,6 @@
 import requests
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication,QListWidget,QWidget,QPushButton,QMessageBox,QVBoxLayout,QLabel,QHBoxLayout,QInputDialog
+from PyQt5.QtWidgets import QApplication,QWidget,QPushButton,QMessageBox,QVBoxLayout,QLabel,QHBoxLayout,QInputDialog,QListWidget
 from PyQt5.QtGui import QFont
 import sys
 import subprocess
@@ -106,14 +106,17 @@ class ChooseWin(QWidget):
         self.buttonT = QPushButton('Учитель', self)
         self.buttonM = QPushButton('Менеджер', self)
         self.buttonA = QPushButton('Администратор', self)
+
         self.listTemp = QListWidget()
         dirTemp = os.listdir("\\\\192.168.1.170\\share\\")
         self.listTemp.addItems(dirTemp)
+
         self.buttonChoco.clicked.connect(self.onClickChoco)
         self.buttonL.clicked.connect(self.onClickL)
         self.buttonT.clicked.connect(self.onClickT)
         self.buttonM.clicked.connect(self.onClickM)
         self.buttonA.clicked.connect(self.onClickA)
+        self.listTemp.itemClicked.connect(self.tempChoose)
 
         self.vL = QVBoxLayout()
         self.hL1 = QHBoxLayout()
@@ -135,6 +138,16 @@ class ChooseWin(QWidget):
         self.vL.setSpacing(5)
         self.vL.addWidget(self.listTemp)
         self.setLayout(self.vL)
+
+    def tempChoose(self): 
+        if self.listTemp.selectedItems():
+            self.tempName = self.listTemp.selectedItems()[0].text()
+            req = '\\\\'+welc.server+'\\share\\'+self.tempName
+            command = f"choco source add -n=Learner -s='"+req+"' --priority=1;"
+            dirTemp = os.listdir(req)
+            for i in dirTemp:
+                print(i)
+                
 
     def onClickChoco(self):
         try: 
@@ -161,7 +174,7 @@ class ChooseWin(QWidget):
     def onClickL(self):
 
         #PS-script
-        command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\learner' --priority=1;choco install googlechrome;choco install winrar; choco install visualstudiocode;choco install python3;choco install git.install;choco install visualstudio2019buildtools;exit"
+        command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\Learner' --priority=1;choco install googlechrome;choco install winrar; choco install visualstudiocode;choco install python3;choco install git.install;choco install visualstudio2019buildtools;exit"
         ps_command = f'Start-Process powershell -Verb RunAs -ArgumentList "-NoExit -Command {command}"'    
         self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
         
@@ -182,16 +195,16 @@ class ChooseWin(QWidget):
 
     def onClickM(self): 
 
-        command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\learner' --priority=1; choco install adobereader;choco install zoom;choco install winrar;choco install thunderbird;choco install wps-office-free;exit"
-        ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'    
+        command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\learner' --priority=1; choco install pdf24;choco install zoom;choco install winrar;choco install thunderbird;choco install wps-office-free;exit"
+        ps_command = f'Start-Process powershell -Verb RunAs -ArgumentList "-NoExit -Command {command}"'    
         self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
 
         self.close()
 
     def onClickA(self): 
 
-        command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\learner' --priority=1; choco install adobereader;choco install winrar;choco install thunderbird;choco install wps-office-free;choco install telegram;exit"
-        ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'    
+        command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\learner' --priority=1; choco install pdf24;choco install winrar;choco install thunderbird;choco install wps-office-free;choco install telegram;exit"
+        ps_command = f'Start-Process powershell -Verb RunAs -ArgumentList "-NoExit -Command {command}"'    
         self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
 
         self.close()
