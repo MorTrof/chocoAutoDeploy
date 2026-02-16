@@ -19,7 +19,7 @@ class ServerWin(QWidget):
     def initUI(self):
         
         self.setWindowTitle('Мастер конфигурации шаблонов')
-        self.setGeometry(1000, 500, 50, 200)
+        self.setGeometry(800, 500, 500, 500)
         self.font = QFont("Times", 14, 500,False)
         self.font2 = QFont("Times", 10, 500,False)
         self.helloLabel = QLabel('Список шаблонов:', self)
@@ -35,13 +35,47 @@ class ServerWin(QWidget):
 
         self.vL = QVBoxLayout()
         
-        self.vL.addWidget(self.helloLabel,Qt.AlignCenter)
+        self.vL.addWidget(self.helloLabel)
         self.vL.addWidget(self.listTemp,Qt.AlignCenter)
         self.vL.addWidget(self.button,Qt.AlignCenter)
         
         self.setLayout(self.vL)
+        
     def onClick(self):
-        pass
+        
+        self.client, ok = QInputDialog.getText(self,'Введите ip клиента','ip клиента')
+        
+        try: 
+
+            if self.client != "" and ok:
+
+                self.connect = subprocess.run(['ping', str(self.client)], capture_output=True, text=True,encoding='cp866')
+                #print(self.connect.stdout)
+                temp = str(self.connect).find('время') > -1
+
+                if temp:
+
+                    mes = QMessageBox()
+                    mes.setText('Соединение установлено!')
+                    mes.show()
+                    mes.exec_()
+
+                else:
+
+                    mes = QMessageBox()
+                    mes.setText('Соединение не установлено!')
+                    mes.show()
+                    mes.exec_()
+                    
+        except:
+
+            mes = QMessageBox()
+            mes.setText('Такого клиента не существует!')
+            mes.show()
+            mes.exec_()
+
+        self.button.adjustSize()
+        
 if __name__ == '__main__':
 
     app = QApplication(sys.argv)
