@@ -53,7 +53,7 @@ class WelcomeWin(QWidget):
         self.setLayout(self.vL)
     def onClick(self):
         self.server, ok = QInputDialog.getText(self,'Введите ip сервера','ip сервера')
-        self.server = '172.24.220.88'
+        self.server = '192.168.1.170'
         try: 
             if self.server != "" and ok:
                 self.connect = requests.get('http://'+self.server)
@@ -152,7 +152,13 @@ class ChooseWin(QWidget):
             mes.show()
             mes.exec_()
         
-    def onClickL(self): pass
+    def onClickL(self):
+        command = 'choco source add -n=Learner -s="\\192.168.1.170\share\learner" --priority=1'
+        ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'
+        self.cons = subprocess.run(["powershell", "-Command", ps_command], check=True)
+        command = "choco install googlechrome"
+        ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'
+        self.cons = subprocess.run(["powershell", "-Command", ps_command], check=True)
     def onClickT(self): pass
     def onClickM(self): pass
     def onClickD(self): pass
