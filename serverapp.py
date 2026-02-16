@@ -5,8 +5,7 @@ from PyQt5.QtGui import QFont
 import sys
 import subprocess
 import os
-import cpuinfo
-import GPUtil
+
 
 class ServerWin(QWidget):
 
@@ -24,7 +23,7 @@ class ServerWin(QWidget):
         self.font = QFont("Times", 14, 500,False)
         self.font2 = QFont("Times", 10, 500,False)
         self.helloLabel = QLabel('Список шаблонов:', self)
-        self.helloLabel.setFont(self.font)
+        self.helloLabel.setFont(self.font2)
 
         self.listTemp = QListWidget()
         dirTemp = os.listdir("C:\\share\\")
@@ -35,8 +34,9 @@ class ServerWin(QWidget):
         self.button.clicked.connect(self.onClick)
 
         self.vL = QVBoxLayout()
-        self.vL.addWidget(self.listTemp)
+        
         self.vL.addWidget(self.helloLabel,Qt.AlignCenter)
+        self.vL.addWidget(self.listTemp,Qt.AlignCenter)
         self.vL.addWidget(self.button,Qt.AlignCenter)
         
         self.setLayout(self.vL)
