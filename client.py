@@ -137,7 +137,7 @@ class ChooseWin(QWidget):
         try: 
             
             #self.cons = subprocess.run(["powershell.exe","Start-Process", "PowerShell", "-Verb", "RunAs;","Set-ExecutionPolicy", "Bypass", "-Scope", "Process", "-Force;", "[System.Net.ServicePointManager]::SecurityProtocol", "=", "[System.Net.ServicePointManager]::SecurityProtocol", "-bor", "3072;", "iex", "((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"])
-            command = "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+            command = "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'));exit"
             ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'
             self.cons = subprocess.run(["powershell", "-Command", ps_command], check=True)
             self.result = self.cons.stdout
@@ -153,12 +153,13 @@ class ChooseWin(QWidget):
             mes.exec_()
         
     def onClickL(self):
-        command = 'choco source add -n=Learner -s="\\\\192.168.1.170\\share\\learner" --priority=1'
-        ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'
-        self.cons = subprocess.run(["powershell", "-Command", ps_command], check=True)
-        command = "choco install googlechrome"
-        ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'
-        self.cons = subprocess.run(["powershell", "-Command", ps_command], check=True)
+        command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\learner' --priority=1; choco install googlechrome;exit"
+        ps_command = f'Start-Process powershell -Verb RunAs -ArgumentList "-NoExit -Command {command}"'    
+        self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
+        print(self.cons.stdout)
+        '''command = "choco install googlechrome"
+        ps_command = f'Start-Process powershell -Verb RunAs -ArgumentList "-NoExit -Command {command}"'
+        self.cons = subprocess.run(["powershell", "-Command", ps_command], check=True)'''
     def onClickT(self): pass
     def onClickM(self): pass
     def onClickD(self): pass
