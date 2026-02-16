@@ -140,6 +140,7 @@ class ChooseWin(QWidget):
         self.setLayout(self.vL)
 
     def tempChoose(self): 
+        
         if self.listTemp.selectedItems():
             self.tempName = self.listTemp.selectedItems()[0].text()
             req = '\\\\'+welc.server+'\\share\\'+self.tempName
@@ -149,8 +150,10 @@ class ChooseWin(QWidget):
                 print(i)
 
 
+
     def onClickChoco(self):
         try: 
+
             #legacy
             #self.cons = subprocess.run(["powershell.exe","Start-Process", "PowerShell", "-Verb", "RunAs;","Set-ExecutionPolicy", "Bypass", "-Scope", "Process", "-Force;", "[System.Net.ServicePointManager]::SecurityProtocol", "=", "[System.Net.ServicePointManager]::SecurityProtocol", "-bor", "3072;", "iex", "((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"])
 
