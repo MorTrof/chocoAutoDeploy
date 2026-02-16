@@ -179,7 +179,7 @@ class ChooseWin(QWidget):
 
     def onClickM(self): 
 
-        command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\learner' --priority=1; choco install adobereader;choco install zoom;choco install winrar;choco install thunderbird;choco install wps-office-free;exit"
+        command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\learner' --priority=1; choco install pdf24;choco install zoom;choco install winrar;choco install thunderbird;choco install wps-office-free;exit"
         ps_command = f'Start-Process powershell -Verb RunAs -ArgumentList "-NoExit -Command {command}"'    
         self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
 
@@ -187,7 +187,7 @@ class ChooseWin(QWidget):
 
     def onClickA(self): 
 
-        command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\learner' --priority=1; choco install adobereader;choco install winrar;choco install thunderbird;choco install wps-office-free;choco install telegram;exit"
+        command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\learner' --priority=1; choco install pdf24;choco install winrar;choco install thunderbird;choco install wps-office-free;choco install telegram;exit"
         ps_command = f'Start-Process powershell -Verb RunAs -ArgumentList "-NoExit -Command {command}"'    
         self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
 
