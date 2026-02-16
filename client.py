@@ -26,7 +26,7 @@ b.clicked.connect(check_con)
 mainwin.show()
 app.exec_()'''
 
-print('test')
+
 
 
 class WelcomeWin(QWidget):
@@ -104,13 +104,13 @@ class ChooseWin(QWidget):
         self.buttonL = QPushButton('Ученик', self)
         self.buttonT = QPushButton('Учитель', self)
         self.buttonM = QPushButton('Менеджер', self)
-        self.buttonD = QPushButton('Директор', self)
+        self.buttonA = QPushButton('Администратор', self)
 
         self.buttonChoco.clicked.connect(self.onClickChoco)
         self.buttonL.clicked.connect(self.onClickL)
         self.buttonT.clicked.connect(self.onClickT)
         self.buttonM.clicked.connect(self.onClickM)
-        self.buttonD.clicked.connect(self.onClickD)
+        self.buttonA.clicked.connect(self.onClickA)
 
         self.vL = QVBoxLayout()
         self.hL1 = QHBoxLayout()
@@ -125,7 +125,7 @@ class ChooseWin(QWidget):
         self.hL1.addWidget(self.buttonL,Qt.AlignCenter)
 
         self.hL2.addWidget(self.buttonM,Qt.AlignCenter)
-        self.hL2.addWidget(self.buttonD,Qt.AlignCenter)
+        self.hL2.addWidget(self.buttonA,Qt.AlignCenter)
 
         self.vL.addLayout(self.hL1)
         self.vL.addLayout(self.hL2)
@@ -135,17 +135,20 @@ class ChooseWin(QWidget):
 
     def onClickChoco(self):
         try: 
-            
+            #legacy
             #self.cons = subprocess.run(["powershell.exe","Start-Process", "PowerShell", "-Verb", "RunAs;","Set-ExecutionPolicy", "Bypass", "-Scope", "Process", "-Force;", "[System.Net.ServicePointManager]::SecurityProtocol", "=", "[System.Net.ServicePointManager]::SecurityProtocol", "-bor", "3072;", "iex", "((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"])
-            command = "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'));exit"
+
+            #PS-script
+            command = "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
             ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'
             self.cons = subprocess.run(["powershell", "-Command", ps_command], check=True)
-            self.result = self.cons.stdout
-            if str(self.result).find('An existing Chocolatey installation was detected.') > -1:
+
+            if int(self.cons) == 0:
                 mes = QMessageBox()
                 mes.setText('Всё готово к установке!')
                 mes.show()
                 mes.exec_()
+
         except:
             mes = QMessageBox()
             mes.setText('Ошибка!')
@@ -153,16 +156,42 @@ class ChooseWin(QWidget):
             mes.exec_()
         
     def onClickL(self):
-        command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\learner' --priority=1; choco install googlechrome;exit"
+
+        #PS-script
+        command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\learner' --priority=1;choco install googlechrome;choco install winrar; choco install visualstudiocode;choco install python3;choco install git.install;choco install visualstudio2019buildtools;exit"
         ps_command = f'Start-Process powershell -Verb RunAs -ArgumentList "-NoExit -Command {command}"'    
         self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
-        print(self.cons.stdout)
+        
+        self.close()
+
+        #legacy
         '''command = "choco install googlechrome"
         ps_command = f'Start-Process powershell -Verb RunAs -ArgumentList "-NoExit -Command {command}"'
         self.cons = subprocess.run(["powershell", "-Command", ps_command], check=True)'''
-    def onClickT(self): pass
-    def onClickM(self): pass
-    def onClickD(self): pass
+
+    def onClickT(self): 
+
+        command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\learner' --priority=1; choco install googlechrome;choco install winrar;choco install visualstudiocode;choco install zoom;choco install python3;choco install git.install;exit"
+        ps_command = f'Start-Process powershell -Verb RunAs -ArgumentList "-NoExit -Command {command}"'    
+        self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
+
+        self.close()
+
+    def onClickM(self): 
+
+        command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\learner' --priority=1; choco install adobereader;choco install zoom;choco install winrar;choco install thunderbird;choco install wps-office-free;exit"
+        ps_command = f'Start-Process powershell -Verb RunAs -ArgumentList "-NoExit -Command {command}"'    
+        self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
+
+        self.close()
+
+    def onClickA(self): 
+
+        command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\learner' --priority=1; choco install adobereader;choco install winrar;choco install thunderbird;choco install wps-office-free;choco install telegram;exit"
+        ps_command = f'Start-Process powershell -Verb RunAs -ArgumentList "-NoExit -Command {command}"'    
+        self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
+
+        self.close()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
