@@ -88,8 +88,10 @@ class WelcomeWin(QWidget):
 class ChooseWin(QWidget):
     '''Окно выбора шаблона'''
     def __init__(self):
+        
         super().__init__()
         self.initUI()
+        
     def initUI(self):
         
         self.setWindowTitle('Выбор шаблона')
@@ -138,7 +140,12 @@ class ChooseWin(QWidget):
         self.vL.setSpacing(5)
         self.vL.addWidget(self.listTemp)
         self.setLayout(self.vL)
-
+        
+        self.buttonA.hide()
+        self.buttonL.hide()
+        self.buttonT.hide()
+        self.buttonM.hide()
+        
     def tempChoose(self): 
         
         if self.listTemp.selectedItems():
@@ -146,10 +153,30 @@ class ChooseWin(QWidget):
             req = '\\\\'+welc.server+'\\share\\'+self.tempName
             command = f"choco source add -n=Learner -s='"+req+"' --priority=1;"
             dirTemp = os.listdir(req)
-            for i in dirTemp:
-                print(i)
-
-
+            word = ''
+            for nupkg in dirTemp:
+                #print(nupkg)
+                for let in nupkg:
+                    
+                    if let != '.':
+                        
+                        word+=let
+                       
+                    else:
+                        
+                        if nupkg.find('extension') > -1:
+                            command = 'choco install '+word+'.extension'
+                        else:    
+                            command = 'choco install '+word
+                        print(command)
+                        ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'    
+                        self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
+                        word = '' 
+                        break
+                        
+                
+                
+                
 
     def onClickChoco(self):
         try: 
