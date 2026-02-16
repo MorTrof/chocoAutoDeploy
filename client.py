@@ -5,6 +5,9 @@ from PyQt5.QtGui import QFont
 import sys
 import subprocess
 import os
+import cpuinfo
+import GPUtil
+
 '''app = QApplication([])
 mainwin = QWidget()
 lV = QVBoxLayout()
@@ -33,13 +36,16 @@ app.exec_()'''
 class WelcomeWin(QWidget):
     '''Окно приветствия'''
     def __init__(self):
+
         super().__init__()
         self.initUI()
+
     def initUI(self):
         
         self.setWindowTitle('Мастер установки приложений')
         self.setGeometry(1000, 500, 50, 200)
         self.font = QFont("Times", 14, 500,False)
+        self.font2 = QFont("Times", 10, 500,False)
         self.helloLabel = QLabel('Привет! Первым делом проверь соединение с сервером, нажав на кнопку ниже!', self)
         self.helloLabel.setFont(self.font)
 
@@ -52,34 +58,46 @@ class WelcomeWin(QWidget):
         self.vL.addWidget(self.button,Qt.AlignCenter)
         
         self.setLayout(self.vL)
+
     def onClick(self):
+
         self.server, ok = QInputDialog.getText(self,'Введите ip сервера','ip сервера')
-        self.server = '192.168.1.170'
+        #self.server = '192.168.1.170'
         try: 
+
             if self.server != "" and ok:
+
                 self.connect = requests.get('http://'+self.server)
                 temp = str(self.connect).find('200') > -1
+
                 if temp:
+
                     mes = QMessageBox()
                     mes.setText('Соединение установлено!')
                     mes.show()
                     mes.exec_()
+
                 else:
+
                     mes = QMessageBox()
                     mes.setText('Соединение не установлено!')
                     mes.show()
                     mes.exec_()
                     
                 if temp: self.nextWin()
-                
+                    
         except:
+
             mes = QMessageBox()
             mes.setText('Такого сервера не существует!')
             mes.show()
             mes.exec_()
+
         self.button.setText('Проверить соединение ещё раз!')
         self.button.adjustSize()
+
     def nextWin(self):
+
         self.hide()
         self.chooseWin = ChooseWin()
         self.chooseWin.show()
@@ -95,66 +113,76 @@ class ChooseWin(QWidget):
     def initUI(self):
         
         self.setWindowTitle('Выбор шаблона')
-        self.setGeometry(1000,700, 500, 200)
+        self.setGeometry(1000,700, 700, 500)
         self.font = QFont("Times", 14, 500,False)
-        
-        self.helloLabel = QLabel('Пожалуйста, выберите шаблон.', self)
+        self.font2 = QFont("Times", 10, 500,False)
+        self.helloLabel = QLabel('Сначала проверьте наличие установщика.', self)
         self.helloLabel.setFont(self.font)
-        self.checkLabel = QLabel('Проверьте наличие установщика.', self)
-        self.checkLabel.setFont(self.font)
-        self.buttonChoco = QPushButton('Развернуть установщик')
+        self.reqLabel = QLabel('Далее проверьте, что ваше устройство соответствует системным требованиям.', self)
+        self.reqLabel.setFont(self.font2)
+        self.checkLabel = QLabel('После этого выберите шаблон.', self)
+        self.checkLabel.setFont(self.font2)
 
-        self.buttonL = QPushButton('Ученик', self)
+        self.buttonChoco = QPushButton('Проверить наличие установщика')
+        self.buttonReq = QPushButton('Проверить соответствие системным требованиям')
+        '''self.buttonL = QPushButton('Ученик', self)
         self.buttonT = QPushButton('Учитель', self)
         self.buttonM = QPushButton('Менеджер', self)
-        self.buttonA = QPushButton('Администратор', self)
+        self.buttonA = QPushButton('Администратор', self)'''
 
         self.listTemp = QListWidget()
-        dirTemp = os.listdir("\\\\192.168.1.170\\share\\")
+        dirTemp = os.listdir("\\\\"+welc.server+"\\share\\")
         self.listTemp.addItems(dirTemp)
 
         self.buttonChoco.clicked.connect(self.onClickChoco)
-        self.buttonL.clicked.connect(self.onClickL)
+        self.buttonReq.clicked.connect(self.onClickReq)
+        '''self.buttonL.clicked.connect(self.onClickL)
         self.buttonT.clicked.connect(self.onClickT)
         self.buttonM.clicked.connect(self.onClickM)
-        self.buttonA.clicked.connect(self.onClickA)
+        self.buttonA.clicked.connect(self.onClickA)'''
+    
         self.listTemp.itemClicked.connect(self.tempChoose)
 
         self.vL = QVBoxLayout()
         self.hL1 = QHBoxLayout()
-        self.hL2 = QHBoxLayout()
+        self.hL1.addWidget(self.buttonChoco)
+        self.hL1.addWidget(self.buttonReq)
+        #self.hL2 = QHBoxLayout()
 
         self.vL.addWidget(self.helloLabel,5,Qt.AlignCenter)
         self.vL.addWidget(self.checkLabel,5,Qt.AlignCenter)
-        
-        self.vL.addWidget(self.buttonChoco,5,Qt.AlignCenter)
+        self.vL.addWidget(self.reqLabel,5,Qt.AlignCenter)
+        #self.vL.addWidget(self.buttonChoco,5,Qt.AlignCenter)
 
-        self.hL1.addWidget(self.buttonT,Qt.AlignCenter)
+        '''self.hL1.addWidget(self.buttonT,Qt.AlignCenter)
         self.hL1.addWidget(self.buttonL,Qt.AlignCenter)
 
         self.hL2.addWidget(self.buttonM,Qt.AlignCenter)
-        self.hL2.addWidget(self.buttonA,Qt.AlignCenter)
+        self.hL2.addWidget(self.buttonA,Qt.AlignCenter)'''
 
         self.vL.addLayout(self.hL1)
-        self.vL.addLayout(self.hL2)
-        self.vL.setSpacing(5)
+        #self.vL.addLayout(self.hL2)
+        self.vL.setSpacing(3)
         self.vL.addWidget(self.listTemp)
         self.setLayout(self.vL)
         
-        self.buttonA.hide()
+        '''self.buttonA.hide()
         self.buttonL.hide()
         self.buttonT.hide()
-        self.buttonM.hide()
+        self.buttonM.hide()'''
         
     def tempChoose(self): 
         
         if self.listTemp.selectedItems():
+
             self.tempName = self.listTemp.selectedItems()[0].text()
             req = '\\\\'+welc.server+'\\share\\'+self.tempName
             command = f"choco source add -n=Learner -s='"+req+"' --priority=1;"
             dirTemp = os.listdir(req)
             word = ''
+
             for nupkg in dirTemp:
+
                 #print(nupkg)
                 for let in nupkg:
                     
@@ -168,6 +196,7 @@ class ChooseWin(QWidget):
                             command = 'choco install '+word+'.extension'
                         else:    
                             command = 'choco install '+word
+
                         print(command)
                         ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'    
                         self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
@@ -175,7 +204,7 @@ class ChooseWin(QWidget):
                         break
                         
                 
-    '''def onClickChoco(self):
+    def onClickChoco(self):
         try: 
 
             #legacy
@@ -187,18 +216,58 @@ class ChooseWin(QWidget):
             self.cons = subprocess.run(["powershell", "-Command", ps_command], check=True)
 
             if self.cons.stdout == None:
+
                 mes = QMessageBox()
                 mes.setText('Всё готово к установке!')
                 mes.show()
                 mes.exec_()
 
         except:
+
             mes = QMessageBox()
             mes.setText('Ошибка!')
             mes.show()
             mes.exec_()
-        
-    def onClickL(self):
+
+    def onClickReq(self):
+        try:
+            info = cpuinfo.get_cpu_info()
+
+            #print(f"Модель: {info['brand_raw']}")
+            #print(f"Архитектура: {info['arch']}")
+            #print(f"Частота: {info.get('hz_actual_friendly', 'N/A')}")
+
+            gpus = GPUtil.getGPUs()
+
+            #print(gpus[0].name)
+            #print(gpus[0].memoryTotal)
+
+            goodCpu = float(info['hz_actual_friendly'][0:3]) > 1 and float(gpus[0].memoryTotal) > 100
+
+            #print(float(info['hz_actual_friendly'][0:3]), goodCpu, float(gpus[0].memoryTotal))
+
+            if goodCpu:
+
+                mes = QMessageBox()
+                mes.setText('Устройство подходит под системные требования!')
+                mes.show()
+                mes.exec_()
+
+            else:
+
+                mes = QMessageBox()
+                mes.setText('Устройство не подходит под системные требования!')
+                mes.show()
+                mes.exec_()
+                self.close()
+        except:
+
+            mes = QMessageBox()
+            mes.setText('Это плохое устройство, меняйте.')
+            mes.show()
+            mes.exec_()
+
+    '''def onClickL(self):
 
         #PS-script
         command = f"choco source add -n=Learner -s='\\\\192.168.1.170\\share\\Learner' --priority=1;choco install googlechrome;choco install winrar; choco install visualstudiocode;choco install python3;choco install git.install;choco install visualstudio2019buildtools;exit"
@@ -237,6 +306,7 @@ class ChooseWin(QWidget):
         self.close()'''
 
 if __name__ == '__main__':
+
     app = QApplication(sys.argv)
     welc = WelcomeWin()
     welc.show()
