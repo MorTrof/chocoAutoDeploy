@@ -6,15 +6,16 @@ import sys
 import subprocess
 import os
 from client import message
-
+import time
+import shutil
 class ServerWin(QWidget):
 
     '''Главное меню'''
 
     def __init__(self):
-
         super().__init__()
         self.initUI()
+
 
     def initUI(self):
         
@@ -34,7 +35,6 @@ class ServerWin(QWidget):
         
         self.checkButton.clicked.connect(self.onClick)
         self.addTempButton.clicked.connect(self.addTemp)
-
         self.vL = QVBoxLayout()
         
         self.vL.addWidget(self.helloLabel)
@@ -61,25 +61,38 @@ class ServerWin(QWidget):
                 temp = str(self.connect).find('время') > -1
 
                 if temp:
-
                     message('Соединение установлено!')
 
                 else:
-
                     message('Соединение не установлено!')
                     
                     
         except:
-
             message('Такого клиента не существует!')
 
-        self.checkButton.adjustSize()
+        #self.checkButton.adjustSize()
     def addTemp(self): 
         self.dirTemp, ok = QInputDialog.getText(self,'Введите название шаблона','название шаблона')
-        if self.dirTemp != '' and ok and self.dirTemp not in os.listdir(os.path.join('C:','share')):
-            os.mkdir(os.path.join('C:','share',self.dirTemp))
+        #message(os.path.join('C:\\','share',self.dirTemp))
+        if self.dirTemp != '' and ok and self.dirTemp not in os.listdir(os.path.join('C:\\','share')):
+            
+            os.mkdir(os.path.join('C:\\','share',self.dirTemp))
+            self.listTemp.clear()
+            dirTemp = os.listdir("C:\\share\\")
+            self.listTemp.addItems(dirTemp)
             message(f'Шаблон {self.dirTemp} добавлен.')
             
+        elif self.dirTemp in os.listdir(os.path.join('C:\\','share')):
+            message('Такой шаблон уже существует!')
+        else:
+            message('Повторите ваш запрос')
+    def removeTemp(self):
+        if self.listTemp.selectedItems():
+            dirName = self.listTemp.selectedItems()[0].text()
+            if dirName in os.listdir(os.path.join('C:\\','share')):
+                shutil.rmtree(os.path.join('C:\\','share',dirName))
+    def updateTemps(self):
+        pass
 if __name__ == '__main__':
 
     app = QApplication(sys.argv)
