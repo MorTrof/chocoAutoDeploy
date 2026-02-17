@@ -30,8 +30,10 @@ class ServerWin(QWidget):
         dirTemp = os.listdir("C:\\share\\")
         self.listTemp.addItems(dirTemp)
 
-        self.checkButton = QPushButton('Проверить соединение', self)
+        self.checkButton = QPushButton('Проверить соединение с клиентом', self)
         self.addTempButton = QPushButton('Добавить шаблон', self)
+        self.delButton = QPushButton('Удалить шаблон', self)
+        self.updateButton = QPushButton('Обновить инсталяторы в шаблоне', self)
         
         self.checkButton.clicked.connect(self.onClick)
         self.addTempButton.clicked.connect(self.addTemp)
@@ -39,13 +41,14 @@ class ServerWin(QWidget):
         
         self.vL.addWidget(self.helloLabel)
         self.vL.addWidget(self.listTemp,Qt.AlignCenter)
+        self.vL.addWidget(self.checkButton)
         
         self.hL = QHBoxLayout()
-        
-        self.hL.addWidget(self.checkButton,Qt.AlignCenter)
         self.hL.addWidget(self.addTempButton,Qt.AlignCenter)
-        
+        self.hL.addWidget(self.delButton,Qt.AlignCenter)
         self.vL.addLayout(self.hL)
+        
+        self.vL.addWidget(self.updateButton)
         self.setLayout(self.vL)
         
     def onClick(self):
