@@ -14,12 +14,13 @@ class ServerWin(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
-        os.mkdir('C:\\share')
+        if 'share' not in os.listdir('C:\\'): os.mkdir('C:\\share')
+        
 
     def initUI(self):
         
         self.setWindowTitle('Мастер конфигурации шаблонов')
-        self.setGeometry(800, 500, 500, 500)
+        self.setGeometry(600, 300, 500, 500)
         self.font = QFont("Times", 14, 500,False)
         self.font2 = QFont("Times", 10, 500,False)
         self.helloLabel = QLabel('Список шаблонов:', self)

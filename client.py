@@ -49,7 +49,7 @@ class WelcomeWin(QWidget):
     def initUI(self):
         
         self.setWindowTitle('Мастер установки приложений')
-        self.setGeometry(1000, 500, 50, 200)
+        self.setGeometry(600, 300, 500, 500)
         self.font = QFont("Times", 14, 500,False)
         self.font2 = QFont("Times", 10, 500,False)
         self.helloLabel = QLabel('Привет! Первым делом проверь соединение с сервером, нажав на кнопку ниже!', self)
@@ -104,7 +104,7 @@ class ChooseWin(QWidget):
     def initUI(self):
         
         self.setWindowTitle('Выбор шаблона')
-        self.setGeometry(1000,700, 700, 500)
+        self.setGeometry(600, 300, 500, 500)
         self.font = QFont("Times", 14, 500,False)
         self.font2 = QFont("Times", 10, 500,False)
         self.helloLabel = QLabel('Сначала проверьте наличие установщика.', self)
