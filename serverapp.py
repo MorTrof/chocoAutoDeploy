@@ -14,7 +14,7 @@ class ServerWin(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
-
+        os.mkdir('C:\\share')
 
     def initUI(self):
         
@@ -64,7 +64,7 @@ class ServerWin(QWidget):
         try:
             if self.listTemp.selectedItems():
                 dirName = self.listTemp.selectedItems()[0].text()
-                progNames = os.listdir("\\\\deepmain\\share\\"+dirName)
+                progNames = os.listdir("C:\\share\\"+dirName)
                 #print(progNames)
                 word=''
                 progListLOCAL = []
@@ -143,7 +143,7 @@ class ServerWin(QWidget):
         try:
             if self.listTemp.selectedItems():
                 dirName = self.listTemp.selectedItems()[0].text()
-                progNames = os.listdir("\\\\deepmain\\share\\"+dirName)
+                progNames = os.listdir("C:\\deepmain\\share\\"+dirName)
                 #print(progNames)
                 word=''
                 progListLOCAL = []
