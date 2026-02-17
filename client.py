@@ -68,27 +68,19 @@ class WelcomeWin(QWidget):
     def onClick(self):
 
         self.server, ok = QInputDialog.getText(self,'Введите ip сервера','ip сервера')
-        self.server = '192.168.1.77'
+        #self.server = '192.168.1.77'
         try: 
 
             if self.server != "" and ok:
 
-                self.connect = requests.get('http://'+self.server)
-                temp = str(self.connect).find('200') > -1
-
-                if temp:
-
-                    message('Соединение установлено!')
-                   
-                else:
+                #self.connect = requests.get('http://'+self.server)
+                self.connect = str(subprocess.run(['ping', str(self.server)], capture_output=True, text=True,encoding='cp866')).find('время') > -1 
+                #temp = str(self.connect).find('200') > -1
+                if self.connect: message('Соединение установлено!') 
+                else: message('Соединение не установлено!')    
+                if self.connect: self.nextWin()
                     
-                    message('Соединение не установлено!')
-                    
-                if temp: self.nextWin()
-                    
-        except:
-
-            message('Такого сервера не существует!')
+        except: message('Такого сервера не существует!')
 
         self.button.setText('Проверить соединение ещё раз!')
         self.button.adjustSize()
@@ -151,9 +143,10 @@ class ChooseWin(QWidget):
 
         #self.hL2 = QHBoxLayout()
 
-        self.vL.addWidget(self.helloLabel,5,Qt.AlignCenter)
-        self.vL.addWidget(self.checkLabel,5,Qt.AlignCenter)
-        self.vL.addWidget(self.reqLabel,5,Qt.AlignCenter)
+        self.vL.addWidget(self.helloLabel,1,Qt.AlignCenter)
+        self.vL.addWidget(self.reqLabel,1,Qt.AlignCenter)
+        self.vL.addWidget(self.checkLabel,1,Qt.AlignCenter)
+        
         
         #self.vL.addWidget(self.buttonChoco,5,Qt.AlignCenter)
 
@@ -176,9 +169,7 @@ class ChooseWin(QWidget):
         self.buttonM.hide()'''
         
     def tempChoose(self): 
-        
         try:
-        
             if self.listTemp.selectedItems():
 
                 self.tempName = self.listTemp.selectedItems()[0].text()
@@ -188,17 +179,11 @@ class ChooseWin(QWidget):
                 word = ''
 
                 for nupkg in dirTemp:
-
                     #print(nupkg)
-
-                    for let in nupkg:
-                        
-                        if let != '.':
-                            
-                            word+=let
-                        
-                        else:
-                            
+                    for let in nupkg:  
+                        if let != '.':                            
+                            word+=let                        
+                        else:                           
                             if nupkg.find('extension') > -1:
                                 command += 'choco install '+word+'.extension'
                             else:    
@@ -210,20 +195,12 @@ class ChooseWin(QWidget):
                             self.cons = subprocess.run(["powershell", "-Command",ps_command,], check=True)
                            
                             word = '' 
-                            break
-                        
+                            break   
                     print(command)
-                    command = ''
-                    
+                    command = ''   
             message('Готово')
-            
-        except:
-            
-            message('Ошибка!')
-            
-                
+        except: message('Ошибка!')                           
     def onClickChoco(self):
-
         try: 
 
             #legacy
@@ -235,19 +212,11 @@ class ChooseWin(QWidget):
             ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'
             self.cons = subprocess.run(["powershell", "-Command", ps_command], check=True)
 
-            if self.cons.stdout == None:
+            if self.cons.stdout == None: message('Всё готово к установке!')
 
-                message('Всё готово к установке!')
-
-        except:
-
-            message('Ошибка!')
-        
-
+        except: message('Ошибка!')
     def onClickReq(self):
-
         try:
-
             info = cpuinfo.get_cpu_info()
 
             #print(f"Модель: {info['brand_raw']}")
@@ -263,16 +232,10 @@ class ChooseWin(QWidget):
 
             #print(float(info['hz_actual_friendly'][0:3]), goodCpu, float(gpus[0].memoryTotal))
 
-            if goodCpu:
-
-                message('Устройство подходит под системные требования!')
-            
-
-            else:
-                
+            if goodCpu: message('Устройство подходит под системные требования!')          
+            else:             
                 message('Устройство не подходит под системные требования!')
-                self.close()
-                
+                self.close()               
         except:
 
             mes = QMessageBox()

@@ -6,7 +6,6 @@ import sys
 import subprocess
 import os
 from client import message
-import time
 import shutil
 class ServerWin(QWidget):
 
@@ -43,7 +42,9 @@ class ServerWin(QWidget):
         self.checkButton.clicked.connect(self.onClick)
         self.addTempButton.clicked.connect(self.addTemp)
         self.delButton.clicked.connect(self.delTemp)
+        self.updateButton.clicked.connect(self.updateTemps)
         self.listTemp.itemClicked.connect(self.showProg)
+        
         self.vL = QVBoxLayout()
         
         self.vL.addWidget(self.helloLabel)
@@ -88,16 +89,12 @@ class ServerWin(QWidget):
                     
     def onClick(self):
         
-        self.client, ok = QInputDialog.getText(self,'Введите ip клиента','ip клиента')
-        
+        self.client, ok = QInputDialog.getText(self,'Введите ip клиента','ip клиента')        
         try: 
-
             if self.client != "" and ok:
-
                 self.connect = subprocess.run(['ping', str(self.client)], capture_output=True, text=True,encoding='cp866')
                 #print(self.connect.stdout)
                 temp = str(self.connect).find('время') > -1
-
                 if temp:
                     message('Соединение установлено!')
 
@@ -124,6 +121,14 @@ class ServerWin(QWidget):
             message('Такой шаблон уже существует!')
         else:
             message('Повторите ваш запрос')
+        self.prog, ok = QInputDialog.getText(self,'Введите название ПО','название ПО')
+        while self.prog != '' and ok:
+            command = f'''Invoke-WebRequest -Uri "https://chocolatey.org/api/v2/package/{self.prog}/" -OutFile "C:\\share\\{self.dirTemp}\\{self.prog}.nupkg"'''
+            try:
+                ps_command = f'''Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList ' -Command {command}' -PassThru -Wait;'''    
+                self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
+            except:message('Запрос недействителен.')
+            self.prog, ok = QInputDialog.getText(self,'Введите название ПО','название ПО')
     def delTemp(self):
         if self.listTemp.selectedItems():
             dirName = self.listTemp.selectedItems()[0].text()
@@ -134,7 +139,35 @@ class ServerWin(QWidget):
                 self.listTemp.addItems(dirTemp)
                 message(f'Шаблон {dirName} был удалён.')
     def updateTemps(self):
-        pass
+        
+        try:
+            if self.listTemp.selectedItems():
+                dirName = self.listTemp.selectedItems()[0].text()
+                progNames = os.listdir("\\\\deepmain\\share\\"+dirName)
+                #print(progNames)
+                word=''
+                progListLOCAL = []
+                for nupkg in progNames:
+                        #print(nupkg)
+                        for let in nupkg:
+                            if let != '.': 
+                                word+=let
+                            else:
+                                if nupkg.find('extension') > -1:
+                                    word+='.extension'
+                            
+                                progListLOCAL.append(word)
+                                word = '' 
+                                break               
+        except: message('Это не шаблон.')
+        for prog in progListLOCAL:
+            command = f'''Invoke-WebRequest -Uri "https://chocolatey.org/api/v2/package/{prog}/" -OutFile "C:\\share\\{dirName}\\{prog}.nupkg"'''
+            try:
+                ps_command = f'''Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList ' -Command {command}' -PassThru -Wait;'''    
+                self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
+                message(f'Обновление {prog} завершено!')
+            except:message('Ошибка.')
+        message('Обновление завершено!')
 if __name__ == '__main__':
 
     app = QApplication(sys.argv)
