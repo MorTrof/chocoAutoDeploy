@@ -200,18 +200,22 @@ class ChooseWin(QWidget):
                         else:
                             
                             if nupkg.find('extension') > -1:
-                                command = 'choco install '+word+'.extension'
+                                command += 'choco install '+word+'.extension'
                             else:    
-                                command = 'choco install '+word
-
+                                command += 'choco install '+word
+                            command += ' --force -y'
                             #print(command)
 
-                            ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'    
-                            self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
+                            ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}; exit" -PassThru -Wait;'    
+                            self.cons = subprocess.run(["powershell", "-Command",ps_command,], check=True)
+                           
                             word = '' 
                             break
                         
-            message('Ошибка!')
+                    print(command)
+                    command = ''
+                    
+            message('Готово')
             
         except:
             

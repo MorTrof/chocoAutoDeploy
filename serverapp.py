@@ -5,7 +5,7 @@ from PyQt5.QtGui import QFont
 import sys
 import subprocess
 import os
-
+from client import message
 
 class ServerWin(QWidget):
 
@@ -62,29 +62,24 @@ class ServerWin(QWidget):
 
                 if temp:
 
-                    mes = QMessageBox()
-                    mes.setText('Соединение установлено!')
-                    mes.show()
-                    mes.exec_()
+                    message('Соединение установлено!')
 
                 else:
 
-                    mes = QMessageBox()
-                    mes.setText('Соединение не установлено!')
-                    mes.show()
-                    mes.exec_()
+                    message('Соединение не установлено!')
+                    
                     
         except:
 
-            mes = QMessageBox()
-            mes.setText('Такого клиента не существует!')
-            mes.show()
-            mes.exec_()
+            message('Такого клиента не существует!')
 
         self.checkButton.adjustSize()
-    def addTemp(): 
-        dir = os.getcwd()
-        print(dir)
+    def addTemp(self): 
+        self.dirTemp, ok = QInputDialog.getText(self,'Введите название шаблона','название шаблона')
+        if self.dirTemp != '' and ok and self.dirTemp not in os.listdir(os.path.join('C:','share')):
+            os.mkdir(os.path.join('C:','share',self.dirTemp))
+            message(f'Шаблон {self.dirTemp} добавлен.')
+            
 if __name__ == '__main__':
 
     app = QApplication(sys.argv)
