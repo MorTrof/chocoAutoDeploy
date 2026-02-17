@@ -30,7 +30,11 @@ b.clicked.connect(check_con)
 mainwin.show()
 app.exec_()'''
 
-
+def message(text):
+    mes = QMessageBox()
+    mes.setText(text)
+    mes.show()
+    mes.exec_()
 
 
 class WelcomeWin(QWidget):
@@ -64,7 +68,7 @@ class WelcomeWin(QWidget):
     def onClick(self):
 
         self.server, ok = QInputDialog.getText(self,'Введите ip сервера','ip сервера')
-        #self.server = '192.168.1.170'
+        self.server = '192.168.1.77'
         try: 
 
             if self.server != "" and ok:
@@ -74,26 +78,17 @@ class WelcomeWin(QWidget):
 
                 if temp:
 
-                    mes = QMessageBox()
-                    mes.setText('Соединение установлено!')
-                    mes.show()
-                    mes.exec_()
-
+                    message('Соединение установлено!')
+                   
                 else:
-
-                    mes = QMessageBox()
-                    mes.setText('Соединение не установлено!')
-                    mes.show()
-                    mes.exec_()
+                    
+                    message('Соединение не установлено!')
                     
                 if temp: self.nextWin()
                     
         except:
 
-            mes = QMessageBox()
-            mes.setText('Такого сервера не существует!')
-            mes.show()
-            mes.exec_()
+            message('Такого сервера не существует!')
 
         self.button.setText('Проверить соединение ещё раз!')
         self.button.adjustSize()
@@ -182,38 +177,46 @@ class ChooseWin(QWidget):
         
     def tempChoose(self): 
         
-        if self.listTemp.selectedItems():
+        try:
+        
+            if self.listTemp.selectedItems():
 
-            self.tempName = self.listTemp.selectedItems()[0].text()
-            req = '\\\\'+welc.server+'\\share\\'+self.tempName
-            command = f"choco source add -n="+self.tempName+" -s='"+req+"' --priority=1;"
-            dirTemp = os.listdir(req)
-            word = ''
+                self.tempName = self.listTemp.selectedItems()[0].text()
+                req = '\\\\'+welc.server+'\\share\\'+self.tempName
+                command = f"choco source add -n="+self.tempName+" -s='"+req+"' --priority=1;"
+                dirTemp = os.listdir(req)
+                word = ''
 
-            for nupkg in dirTemp:
+                for nupkg in dirTemp:
 
-                #print(nupkg)
+                    #print(nupkg)
 
-                for let in nupkg:
-                    
-                    if let != '.':
+                    for let in nupkg:
                         
-                        word+=let
-                       
-                    else:
+                        if let != '.':
+                            
+                            word+=let
                         
-                        if nupkg.find('extension') > -1:
-                            command = 'choco install '+word+'.extension'
-                        else:    
-                            command = 'choco install '+word
+                        else:
+                            
+                            if nupkg.find('extension') > -1:
+                                command = 'choco install '+word+'.extension'
+                            else:    
+                                command = 'choco install '+word
 
-                        #print(command)
+                            #print(command)
 
-                        ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'    
-                        self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
-                        word = '' 
-                        break
+                            ps_command = f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "-NoExit -Command {command}"'    
+                            self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
+                            word = '' 
+                            break
                         
+            message('Ошибка!')
+            
+        except:
+            
+            message('Ошибка!')
+            
                 
     def onClickChoco(self):
 
@@ -230,17 +233,12 @@ class ChooseWin(QWidget):
 
             if self.cons.stdout == None:
 
-                mes = QMessageBox()
-                mes.setText('Всё готово к установке!')
-                mes.show()
-                mes.exec_()
+                message('Всё готово к установке!')
 
         except:
 
-            mes = QMessageBox()
-            mes.setText('Ошибка!')
-            mes.show()
-            mes.exec_()
+            message('Ошибка!')
+        
 
     def onClickReq(self):
 
@@ -263,22 +261,18 @@ class ChooseWin(QWidget):
 
             if goodCpu:
 
-                mes = QMessageBox()
-                mes.setText('Устройство подходит под системные требования!')
-                mes.show()
-                mes.exec_()
+                message('Устройство подходит под системные требования!')
+            
 
             else:
-
-                mes = QMessageBox()
-                mes.setText('Устройство не подходит под системные требования!')
-                mes.show()
-                mes.exec_()
+                
+                message('Устройство не подходит под системные требования!')
                 self.close()
+                
         except:
 
             mes = QMessageBox()
-            mes.setText('Это плохое устройство, меняйте.')
+            mes.setText('Всё в порядке')
             mes.show()
             mes.exec_()
 

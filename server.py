@@ -9,5 +9,5 @@ def index():
     return "Сайт работает"
 
 if __name__ == "__main__":
-    app.run(host="192.168.1.170", port=80)
+    app.run(host="192.168.1.77", port=80)
  
