@@ -35,12 +35,21 @@ class ServerWin(QWidget):
         self.delButton = QPushButton('Удалить шаблон', self)
         self.updateButton = QPushButton('Обновить инсталяторы в шаблоне', self)
         
+        self.progLabel = QLabel('Список инсталляторов ПО в шаблоне:', self)
+        self.progLabel.setFont(self.font2)
+
+        self.listProg = QListWidget()
+        
         self.checkButton.clicked.connect(self.onClick)
         self.addTempButton.clicked.connect(self.addTemp)
+        self.delButton.clicked.connect(self.delTemp)
+        self.listTemp.itemClicked.connect(self.showProg)
         self.vL = QVBoxLayout()
         
         self.vL.addWidget(self.helloLabel)
         self.vL.addWidget(self.listTemp,Qt.AlignCenter)
+        self.vL.addWidget(self.progLabel)
+        self.vL.addWidget(self.listProg,Qt.AlignCenter)
         self.vL.addWidget(self.checkButton)
         
         self.hL = QHBoxLayout()
@@ -50,7 +59,33 @@ class ServerWin(QWidget):
         
         self.vL.addWidget(self.updateButton)
         self.setLayout(self.vL)
-        
+    def showProg(self):
+        try:
+            if self.listTemp.selectedItems():
+                dirName = self.listTemp.selectedItems()[0].text()
+                progNames = os.listdir("\\\\deepmain\\share\\"+dirName)
+                #print(progNames)
+                word=''
+                progListLOCAL = []
+                for nupkg in progNames:
+                        #print(nupkg)
+                        for let in nupkg:
+                            if let != '.': 
+                                word+=let
+                            else:
+                                if nupkg.find('extension') > -1:
+                                    word+='.extension'
+                            
+                                progListLOCAL.append(word)
+                                word = '' 
+                                break
+                self.listProg.clear()
+                self.listProg.addItems(progListLOCAL)
+        except:
+            message('Это не шаблон.')
+                        
+                        
+                    
     def onClick(self):
         
         self.client, ok = QInputDialog.getText(self,'Введите ip клиента','ip клиента')
@@ -89,11 +124,15 @@ class ServerWin(QWidget):
             message('Такой шаблон уже существует!')
         else:
             message('Повторите ваш запрос')
-    def removeTemp(self):
+    def delTemp(self):
         if self.listTemp.selectedItems():
             dirName = self.listTemp.selectedItems()[0].text()
             if dirName in os.listdir(os.path.join('C:\\','share')):
                 shutil.rmtree(os.path.join('C:\\','share',dirName))
+                self.listTemp.clear()
+                dirTemp = os.listdir("C:\\share\\")
+                self.listTemp.addItems(dirTemp)
+                message(f'Шаблон {dirName} был удалён.')
     def updateTemps(self):
         pass
 if __name__ == '__main__':
