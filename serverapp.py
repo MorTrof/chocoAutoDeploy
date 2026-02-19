@@ -12,8 +12,9 @@ class ServerWin(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.initUI()
         if 'share' not in os.listdir('C:\\'): os.mkdir('C:\\share')
+        self.initUI()
+        
         
 
     def initUI(self):
@@ -33,8 +34,11 @@ class ServerWin(QWidget):
         self.addTempButton = QPushButton('Добавить шаблон', self)
         self.delButton = QPushButton('Удалить шаблон', self)
         self.updateButton = QPushButton('Обновить инсталяторы в шаблоне', self)
-        
-        self.progLabel = QLabel('Список инсталляторов ПО в шаблоне:', self)
+        self.addInstButton = QPushButton('Добавить пакет', self)
+        self.delInstButton = QPushButton('Удалить пакет', self)
+
+
+        self.progLabel = QLabel('Список пакетов в шаблоне:', self)
         self.progLabel.setFont(self.font2)
 
         self.listProg = QListWidget()
@@ -44,7 +48,8 @@ class ServerWin(QWidget):
         self.delButton.clicked.connect(self.delTemp)
         self.updateButton.clicked.connect(self.updateTemps)
         self.listTemp.itemClicked.connect(self.showProg)
-        
+        self.addInstButton.clicked.connect(self.addInst)
+        self.delInstButton.clicked.connect(self.delInst)
         self.vL = QVBoxLayout()
         
         self.vL.addWidget(self.helloLabel)
@@ -57,7 +62,10 @@ class ServerWin(QWidget):
         self.hL.addWidget(self.addTempButton,Qt.AlignCenter)
         self.hL.addWidget(self.delButton,Qt.AlignCenter)
         self.vL.addLayout(self.hL)
-        
+        self.hl2 = QHBoxLayout()
+        self.hl2.addWidget(self.addInstButton,Qt.AlignCenter)
+        self.hl2.addWidget(self.delInstButton,Qt.AlignCenter)
+        self.vL.addLayout(self.hl2)
         self.vL.addWidget(self.updateButton)
         self.setLayout(self.vL)
     def showProg(self):
@@ -121,14 +129,15 @@ class ServerWin(QWidget):
             message('Такой шаблон уже существует!')
         else:
             message('Повторите ваш запрос')
-        self.prog, ok = QInputDialog.getText(self,'Введите название ПО','название ПО')
+        self.prog, ok = QInputDialog.getText(self,'Введите название пакета','название пакета')
         while self.prog != '' and ok:
             command = f'''Invoke-WebRequest -Uri "https://chocolatey.org/api/v2/package/{self.prog}/" -OutFile "C:\\share\\{self.dirTemp}\\{self.prog}.nupkg"'''
             try:
                 ps_command = f'''Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList ' -Command {command}' -PassThru -Wait;'''    
-                self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True)
-            except:message('Запрос недействителен.')
-            self.prog, ok = QInputDialog.getText(self,'Введите название ПО','название ПО')
+                self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True, capture_output=True)
+                message(f'{self.cons.stdout}')
+            except:message(f'Не удалось добавить данный пакет.')
+            self.prog, ok = QInputDialog.getText(self,'Введите пакета','название пакета')
     def delTemp(self):
         if self.listTemp.selectedItems():
             dirName = self.listTemp.selectedItems()[0].text()
@@ -137,16 +146,41 @@ class ServerWin(QWidget):
                 self.listTemp.clear()
                 dirTemp = os.listdir("C:\\share\\")
                 self.listTemp.addItems(dirTemp)
+                self.listProg.clear()
                 message(f'Шаблон {dirName} был удалён.')
-    def updateTemps(self):
+    def addInst(self):
         
+        if self.listTemp.selectedItems():
+            self.dirTemp = self.listTemp.selectedItems()[0].text()
+            command = f'''Invoke-WebRequest -Uri "https://chocolatey.org/api/v2/package/{self.prog}/" -OutFile "C:\\share\\{self.dirTemp}\\{self.prog}.nupkg"'''
+            message(self.dirTemp)
+            try:
+                ps_command = f'''Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList ' -Command {command}' -PassThru -Wait;'''    
+                self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True, capture_output=True)
+                message(f'{self.prog} успешно добавлен!')
+            except:message(f'Не удалось добавить данный пакет.')
+            self.listProg.clear()
+            self.listProg.addItems(os.listdir(f'C:\\share\\{self.dirTemp}'))
+    def delInst(self):
+        if self.listTemp.selectedItems():
+            if self.listProg.selectedItems():
+                tempName = self.listProg.selectedItems()[0].text()
+                instName = self.listProg.selectedItems()[0].text()
+                if instName in os.listdir(os.path.join('C:\\','share',tempName)):
+                    shutil.rmtree(os.path.join('C:\\','share',tempName,instName))
+                    self.listProg.clear()
+                    dirTemp = os.listdir(f"C:\\share\\{tempName}")
+                    self.listProg.addItems(dirTemp)
+                    message(f'Пакет {instName} был удалён.')        
+    def updateTemps(self):
+        progListLOCAL = []
         try:
             if self.listTemp.selectedItems():
                 dirName = self.listTemp.selectedItems()[0].text()
-                progNames = os.listdir("C:\\deepmain\\share\\"+dirName)
+                progNames = os.listdir(f"C:\\share\\{dirName}")
+                message(f"{dirName} {progNames}")
                 #print(progNames)
-                word=''
-                progListLOCAL = []
+                word=''        
                 for nupkg in progNames:
                         #print(nupkg)
                         for let in nupkg:
@@ -159,7 +193,8 @@ class ServerWin(QWidget):
                                 progListLOCAL.append(word)
                                 word = '' 
                                 break               
-        except: message('Это не шаблон.')
+        except: message(f'Это не шаблон. {progListLOCAL}')
+        
         for prog in progListLOCAL:
             command = f'''Invoke-WebRequest -Uri "https://chocolatey.org/api/v2/package/{prog}/" -OutFile "C:\\share\\{dirName}\\{prog}.nupkg"'''
             try:
