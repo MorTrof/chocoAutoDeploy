@@ -196,7 +196,7 @@ class ChooseWin(QWidget):
                            
                             word = '' 
                             break   
-                    print(command)
+                    
                     command = ''   
             message('Готово')
         except: message('Ошибка!')                           
@@ -228,7 +228,7 @@ class ChooseWin(QWidget):
             #print(gpus[0].name)
             #print(gpus[0].memoryTotal)
 
-            goodCpu = float(info['hz_actual_friendly'][0:3]) > 1 and float(gpus[0].memoryTotal) > 100
+            goodCpu = float(info['hz_actual_friendly'][0:3]) > 1 and float(gpus[0].memoryTotal) > 500
 
             #print(float(info['hz_actual_friendly'][0:3]), goodCpu, float(gpus[0].memoryTotal))
 
