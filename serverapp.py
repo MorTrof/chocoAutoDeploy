@@ -1,4 +1,3 @@
-import requests
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication,QWidget,QPushButton,QMessageBox,QVBoxLayout,QLabel,QHBoxLayout,QInputDialog,QListWidget
 from PyQt5.QtGui import QFont
