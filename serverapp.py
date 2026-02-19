@@ -158,7 +158,11 @@ class ServerWin(QWidget):
                 try:
                     ps_command = f'''Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList ' -Command {command}' -PassThru -Wait;'''    
                     self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True, capture_output=True)
-                    message(f'{self.prog} успешно добавлен!')
+                    if self.prog+'.nupkg' in os.listdir(f'C:\\share\\{self.dirTemp}'):
+                
+                        message(f'{self.prog} успешно добавлен!')
+                    else:
+                        message('Такого пакета не существует')
                 except:message(f'Не удалось добавить данный пакет.')
                 self.listProg.clear()
                 self.listProg.addItems(os.listdir(f'C:\\share\\{self.dirTemp}'))
@@ -176,8 +180,10 @@ class ServerWin(QWidget):
                     message(os.path.join('C:\\','share',tempName,instName))
                     self.listProg.clear()
                     dirTemp = os.listdir(f"C:\\share\\{tempName}")
+
                     self.listProg.addItems(dirTemp)
-                    message(f'Пакет {instName} был удалён.')        
+                    message(f'Пакет {instName} был удалён.') 
+               
     def updateTemps(self):
         progListLOCAL = []
         try:
