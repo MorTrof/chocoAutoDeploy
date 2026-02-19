@@ -148,26 +148,32 @@ class ServerWin(QWidget):
                 self.listTemp.addItems(dirTemp)
                 self.listProg.clear()
                 message(f'Шаблон {dirName} был удалён.')
-    def addInst(self):
-        
+    def addInst(self):    
         if self.listTemp.selectedItems():
-            self.dirTemp = self.listTemp.selectedItems()[0].text()
-            command = f'''Invoke-WebRequest -Uri "https://chocolatey.org/api/v2/package/{self.prog}/" -OutFile "C:\\share\\{self.dirTemp}\\{self.prog}.nupkg"'''
-            message(self.dirTemp)
-            try:
-                ps_command = f'''Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList ' -Command {command}' -PassThru -Wait;'''    
-                self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True, capture_output=True)
-                message(f'{self.prog} успешно добавлен!')
-            except:message(f'Не удалось добавить данный пакет.')
-            self.listProg.clear()
-            self.listProg.addItems(os.listdir(f'C:\\share\\{self.dirTemp}'))
+            self.prog, ok = QInputDialog.getText(self,'Введите название пакета','название пакета')
+            if self.prog != '' and ok:
+                self.dirTemp = self.listTemp.selectedItems()[0].text()
+                command = f'''Invoke-WebRequest -Uri "https://chocolatey.org/api/v2/package/{self.prog}/" -OutFile "C:\\share\\{self.dirTemp}\\{self.prog}.nupkg"'''
+                #message(self.dirTemp)
+                try:
+                    ps_command = f'''Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList ' -Command {command}' -PassThru -Wait;'''    
+                    self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True, capture_output=True)
+                    message(f'{self.prog} успешно добавлен!')
+                except:message(f'Не удалось добавить данный пакет.')
+                self.listProg.clear()
+                self.listProg.addItems(os.listdir(f'C:\\share\\{self.dirTemp}'))
     def delInst(self):
         if self.listTemp.selectedItems():
             if self.listProg.selectedItems():
-                tempName = self.listProg.selectedItems()[0].text()
-                instName = self.listProg.selectedItems()[0].text()
-                if instName in os.listdir(os.path.join('C:\\','share',tempName)):
-                    shutil.rmtree(os.path.join('C:\\','share',tempName,instName))
+                tempName = self.listTemp.selectedItems()[0].text()
+                instName = self.listProg.selectedItems()[0].text()+'.nupkg'
+                #message(os.path.join('C:\\','share',tempName,instName))
+                temp = os.listdir(os.path.join('C:\\','share',tempName))
+                #message(str(instName in temp))
+                if instName in temp:
+                    message(os.path.join('C:\\','share',tempName,instName))
+                    os.remove(os.path.join('C:\\','share',tempName,instName))
+                    message(os.path.join('C:\\','share',tempName,instName))
                     self.listProg.clear()
                     dirTemp = os.listdir(f"C:\\share\\{tempName}")
                     self.listProg.addItems(dirTemp)
@@ -209,3 +215,5 @@ if __name__ == '__main__':
     welc = ServerWin()
     welc.show()
     sys.exit(app.exec_())
+
+
