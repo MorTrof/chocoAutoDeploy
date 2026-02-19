@@ -132,10 +132,11 @@ class ServerWin(QWidget):
         self.prog, ok = QInputDialog.getText(self,'Введите название пакета','название пакета')
         while self.prog != '' and ok:
             command = f'''Invoke-WebRequest -Uri "https://chocolatey.org/api/v2/package/{self.prog}/" -OutFile "C:\\share\\{self.dirTemp}\\{self.prog}.nupkg"'''
+            #message(command)
             try:
                 ps_command = f'''Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList ' -Command {command}' -PassThru -Wait;'''    
                 self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True, capture_output=True)
-                message(f'{self.cons.stdout}')
+                
             except:message(f'Не удалось добавить данный пакет.')
             self.prog, ok = QInputDialog.getText(self,'Введите пакета','название пакета')
     def delTemp(self):
@@ -175,9 +176,9 @@ class ServerWin(QWidget):
                 temp = os.listdir(os.path.join('C:\\','share',tempName))
                 #message(str(instName in temp))
                 if instName in temp:
-                    message(os.path.join('C:\\','share',tempName,instName))
+                    #message(os.path.join('C:\\','share',tempName,instName))
                     os.remove(os.path.join('C:\\','share',tempName,instName))
-                    message(os.path.join('C:\\','share',tempName,instName))
+                    #message(os.path.join('C:\\','share',tempName,instName))
                     self.listProg.clear()
                     dirTemp = os.listdir(f"C:\\share\\{tempName}")
 
@@ -190,7 +191,7 @@ class ServerWin(QWidget):
             if self.listTemp.selectedItems():
                 dirName = self.listTemp.selectedItems()[0].text()
                 progNames = os.listdir(f"C:\\share\\{dirName}")
-                message(f"{dirName} {progNames}")
+                #message(f"{dirName} {progNames}")
                 #print(progNames)
                 word=''        
                 for nupkg in progNames:
@@ -215,6 +216,8 @@ class ServerWin(QWidget):
                 message(f'Обновление {prog} завершено!')
             except:message('Ошибка.')
         message('Обновление завершено!')
+
+
 if __name__ == '__main__':
 
     app = QApplication(sys.argv)
