@@ -173,7 +173,25 @@ class ServerWin(QWidget):
                         message('Такого пакета не существует')
                 except:message(f'Не удалось добавить данный пакет.')
                 self.listProg.clear()
-                self.listProg.addItems(os.listdir(f'C:\\share\\{self.dirTemp}'))
+                def rm_nupkg(nupkg_list):
+                    pureList = []
+                    word=''
+                    for nupkg in nupkg_list:
+                    #print(nupkg)
+                        for let in nupkg:  
+                            if let != '.':                            
+                                word+=let                        
+                            else:                           
+                                if nupkg.find('extension') > -1:
+                                    word+='.extension'
+                                pureList.append(word)
+                                word=''
+                                break
+
+                        
+                    return pureList
+                pureDirTemp = rm_nupkg(os.listdir(f'C:\\share\\{self.dirTemp}'))
+                self.listProg.addItems(pureDirTemp)
     def delInst(self):
         if self.listTemp.selectedItems():
             if self.listProg.selectedItems():
