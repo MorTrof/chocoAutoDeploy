@@ -129,6 +129,13 @@ class ServerWin(QWidget):
             message('Такой шаблон уже существует!')
         else:
             message('Повторите ваш запрос')
+        self.prog, ok = QInputDialog.getText(self,'Введите название пакета','название пакета')    
+        command = f'''Invoke-WebRequest -Uri "https://chocolatey.org/api/v2/package/chocolatey-core.extension/" -OutFile "C:\\share\\{self.dirTemp}\\chocolatey-core.extension.nupkg"'''
+        ps_command = f'''Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList ' -Command {command}' -PassThru -Wait;'''    
+        self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True, capture_output=True)
+        command = f'''Invoke-WebRequest -Uri "https://chocolatey.org/api/v2/package/chocolatey-compatibility.extension/" -OutFile "C:\\share\\{self.dirTemp}\\chocolatey-compatibility.extension.nupkg"'''
+        ps_command = f'''Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList ' -Command {command}' -PassThru -Wait;'''    
+        self.cons = subprocess.run(["powershell", "-Command",ps_command], check=True, capture_output=True)
         self.prog, ok = QInputDialog.getText(self,'Введите название пакета','название пакета')
         while self.prog != '' and ok:
             command = f'''Invoke-WebRequest -Uri "https://chocolatey.org/api/v2/package/{self.prog}/" -OutFile "C:\\share\\{self.dirTemp}\\{self.prog}.nupkg"'''
